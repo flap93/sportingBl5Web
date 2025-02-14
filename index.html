@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sporitng BL5</title>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyDcrh3Zto80QZo80nncUi5ImoyuovqGfD0",
+                authDomain: "sportingbl5-382c0.firebaseapp.com",
+                projectId: "sportingbl5-382c0",
+                storageBucket: "sportingbl5-382c0.firebasestorage.app",
+                messagingSenderId: "447577437131",
+                appId: "1:447577437131:web:21b51b75ca6ba3711ebc4e",
+                measurementId: "G-768JMST9YT",
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+
+            document.addEventListener("DOMContentLoaded", async function () {
+                const style = document.createElement("style");
+                style.innerHTML = `
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 400px;
+                margin: auto;
+                padding: 20px;
+                background-color: #f4f4f4;
+            }
+            h2 {
+                text-align: center;
+            }
+            form {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            label {
+                display: block;
+                margin-bottom: 10px;
+            }
+            input {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                width: 100%;
+                padding: 10px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+            button:hover {
+                background: #218838;
+            }
+            table {
+                width: 100%;
+                background: white;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+            th {
+                background: #007bff;
+                color: white;
+            }
+            td button {
+                background: #dc3545;
+                border: none;
+                padding: 5px;
+                color: white;
+                cursor: pointer;
+                border-radius: 3px;
+            }
+            td button:hover {
+                background: #c82333;
+            }
+        `;
+                document.head.appendChild(style);
+
+                const appDiv = document.createElement("div");
+                appDiv.id = "app";
+                document.body.appendChild(appDiv);
+
+                appDiv.innerHTML = `
+            <h2>Sporting Bl5</h2>
+            <form id="playerForm">
+                <label>Nombre: <input type="text" id="name"></label>
+                <label>Goles: <input type="number" id="goals" min="0"></label>
+                <label>Asistencias: <input type="number" id="assists" min="0"></label>
+                <button type="submit">Añadir</button>
+            </form>
+            <h3>Lista de Jugadores</h3>
+            <table>
+                <thead>
+                    <tr><th>Nombre</th><th>Goles</th><th>Asistencias</th><th>Acciones</th></tr>
+                </thead>
+                <tbody id="playerList"></tbody>
+            </table>
+            `;
+
+                const playerForm = document.getElementById("playerForm");
+                const playerList = document.getElementById("playerList");
+
+                async function loadPlayers() {
+                    playerList.innerHTML = "";
+                    const querySnapshot = await getDocs(collection(db, "players"));
+                    querySnapshot.forEach((doc) => {
+                        const player = doc.data();
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                        <td>${player.name}</td>
+                        <td>${player.goals}</td>
+                        <td>${player.assists}</td>
+                        <td>
+                            <button onclick="editPlayer('${doc.id}', '${player.name}', ${player.goals}, ${player.assists})">Editar</button>
+                            <button onclick="deletePlayer('${doc.id}')">Eliminar</button>
+                        </td>
+                    `;
+                        playerList.appendChild(row);
+                    });
+                }
+
+                playerForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById("name").value;
+                    const goals = parseInt(document.getElementById("goals").value) || 0;
+                    const assists = parseInt(document.getElementById("assists").value) || 0;
+                    if (!name) return alert("Introduce un nombre");
+                    const editingId = playerForm.dataset.editingId;
+                    if (editingId) {
+                        await updateDoc(doc(db, "players", editingId), { name, goals, assists });
+                        delete playerForm.dataset.editingId;
+                    } else {
+                        await addDoc(collection(db, "players"), { name, goals, assists });
+                    }
+                    playerForm.reset();
+                    loadPlayers();
+                });
+
+                window.editPlayer = function (id, name, goals, assists) {
+                    document.getElementById("name").value = name;
+                    document.getElementById("goals").value = goals;
+                    document.getElementById("assists").value = assists;
+                    playerForm.dataset.editingId = id;
+                };
+
+                window.deletePlayer = async function (id) {
+                    await deleteDoc(doc(db, "players", id));
+                    loadPlayers();
+                };
+
+                loadPlayers();
+            });
+        </script>
+    </head>
+    <body></body>
+</html>
