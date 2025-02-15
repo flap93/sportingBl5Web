@@ -1,89 +1,190 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sporitng BL5</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
+            import {
+                getFirestore,
+                collection,
+                getDocs,
+                addDoc,
+                updateDoc,
+                deleteDoc,
+                doc,
+            } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+            const firebaseConfig = {
+                apiKey: "AIzaSyDcrh3Zto80QZo80nncUi5ImoyuovqGfD0",
+                authDomain: "sportingbl5-382c0.firebaseapp.com",
+                projectId: "sportingbl5-382c0",
+                storageBucket: "sportingbl5-382c0.firebasestorage.app",
+                messagingSenderId: "447577437131",
+                appId: "1:447577437131:web:21b51b75ca6ba3711ebc4e",
+                measurementId: "G-768JMST9YT",
+            };
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app);
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+            document.addEventListener("DOMContentLoaded", async function () {
+                // Agregar estilos dinámicamente
+                const style = document.createElement("style");
+                style.innerHTML = `
+                    body {
+                        font-family: Arial, sans-serif;
+                        max-width: 400px;
+                        margin: auto;
+                        padding: 20px;
+                        background-color: #f4f4f4;
+                    }
+                    h2 {
+                        text-align: center;
+                    }
+                    form {
+                        background: white;
+                        padding: 15px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    label {
+                        display: block;
+                        margin-bottom: 10px;
+                    }
+                    input {
+                        width: 100%;
+                        padding: 8px;
+                        margin-top: 5px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                    }
+                    button {
+                        width: 100%;
+                        padding: 10px;
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    }
+                    button:hover {
+                        background: #218838;
+                    }
+                    table {
+                        width: 100%;
+                        background: white;
+                        border-collapse: collapse;
+                        margin-top: 15px;
+                    }
+                    th, td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: center;
+                    }
+                    th {
+                        background: #007bff;
+                        color: white;
+                    }
+                    td button {
+                        background: #dc3545;
+                        border: none;
+                        padding: 5px;
+                        color: white;
+                        cursor: pointer;
+                        border-radius: 3px;
+                    }
+                    td button:hover {
+                        background: #c82333;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // Crear el contenedor de la app
+                const appDiv = document.createElement("div");
+                appDiv.id = "app";
+                appDiv.innerHTML = `
+                    <h2>Sporting BL5</h2>
+                    <form id="playerForm">
+                        <label>Nombre: <input type="text" id="name" required /></label>
+                        <label>Goles: <input type="number" id="goals" min="0" /></label>
+                        <label>Asistencias: <input type="number" id="assists" min="0" /></label>
+                        <button type="submit">Guardar</button>
+                    </form>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Goles</th>
+                                <th>Asistencias</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playerList"></tbody>
+                    </table>
+                `;
+                document.body.appendChild(appDiv);
+
+                const playerForm = document.getElementById("playerForm");
+                const playerList = document.getElementById("playerList");
+
+                async function loadPlayers() {
+                    playerList.innerHTML = "";
+                    const querySnapshot = await getDocs(collection(db, "players"));
+                    querySnapshot.forEach((doc) => {
+                        const player = doc.data();
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${player.name}</td>
+                            <td>${player.goals}</td>
+                            <td>${player.assists}</td>
+                            <td>
+                                <button onclick="editPlayer('${doc.id}', '${player.name}', ${player.goals}, ${player.assists})">Editar</button>
+                                <button onclick="deletePlayer('${doc.id}')">Eliminar</button>
+                            </td>
+                        `;
+                        playerList.appendChild(row);
+                    });
+                }
+
+                playerForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById("name").value;
+                    const goals = parseInt(document.getElementById("goals").value) || 0;
+                    const assists = parseInt(document.getElementById("assists").value) || 0;
+                    if (!name) return alert("Introduce un nombre");
+
+                    const editingId = playerForm.dataset.editingId;
+                    if (editingId) {
+                        await updateDoc(doc(db, "players", editingId), { name, goals, assists });
+                        delete playerForm.dataset.editingId;
+                    } else {
+                        await addDoc(collection(db, "players"), { name, goals, assists });
+                    }
+                    playerForm.reset();
+                    loadPlayers();
+                });
+
+                window.editPlayer = function (id, name, goals, assists) {
+                    document.getElementById("name").value = name;
+                    document.getElementById("goals").value = goals;
+                    document.getElementById("assists").value = assists;
+                    playerForm.dataset.editingId = id;
+                };
+
+                window.deletePlayer = async function (id) {
+                    await deleteDoc(doc(db, "players", id));
+                    loadPlayers();
+                };
+
+                loadPlayers();
+            });
+        </script>
+    </head>
+    <body></body>
 </html>
